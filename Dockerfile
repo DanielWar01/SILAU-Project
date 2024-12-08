@@ -17,7 +17,7 @@ RUN npm install -g @angular/cli@17.3.11
 COPY . .
 
 # Construimos la aplicación Angular (esto generará los archivos estáticos)
-RUN ng build --prod
+RUN ng build --configuration production
 
 # Usamos una imagen ligera de Nginx para servir la aplicación Angular
 FROM nginx:alpine
