@@ -1,32 +1,26 @@
-# Usamos una imagen oficial de Node.js como base
-FROM node:18 AS builder
+# Usa una imagen oficial de Node.js
+FROM node:18-alpine
 
-# Establecemos el directorio de trabajo
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copiamos los archivos de package.json y package-lock.json (o yarn.lock) para instalar dependencias
+# Copia los archivos de package.json y package-lock.json
 COPY package*.json ./
 
-# Instalamos las dependencias del proyecto
-RUN npm install
+# Instala las dependencias del proyecto
+RUN npm ci
 
-# Instalamos Angular CLI 17.3.11 globalmente
+# Instala Angular CLI globalmente
 RUN npm install -g @angular/cli@17.3.11
 
-# Copiamos el código fuente del proyecto
+# Copia todo el código fuente del proyecto
 COPY . .
 
-# Construimos la aplicación Angular (esto generará los archivos estáticos)
+# Construye la aplicación para producción
 RUN ng build --configuration production
 
-# Usamos una imagen ligera de Nginx para servir la aplicación Angular
-FROM nginx:alpine
-
-# Copiamos el contenido generado por el build de Angular al directorio de Nginx
-COPY --from=builder /app/dist/silau-project /usr/share/nginx/html
-
-# Exponemos el puerto 80
+# Expone el puerto 80
 EXPOSE 80
 
-# Comando por defecto para arrancar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para iniciar la aplicación
+CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "80"]
